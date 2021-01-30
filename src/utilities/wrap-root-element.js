@@ -1,12 +1,12 @@
 import React from "react";
 import { ThemeProvider } from "theme-ui";
-import { deep } from "@theme-ui/presets";
+import { dark } from "@theme-ui/presets";
 
-const newDeep = {
-  ...deep,
+const newdark = {
+  ...dark,
   sizes: { container: "100%" },
 };
 
 export const wrapRootElement = ({ element }) => (
-  <ThemeProvider theme={newDeep}>{element}</ThemeProvider>
+  <ThemeProvider theme={newdark}>{element}</ThemeProvider>
 );
