@@ -8,8 +8,11 @@ import {
   Text,
   IconButton,
 } from "theme-ui";
-import EditIcon from "../images/edit.png";
-import DeleteIcon from "../images/delete.png";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { dark } from "@theme-ui/presets";
+// import EditIcon from "../images/edit.png";
+// import DeleteIcon from "../images/delete.png";
 
 export default () => {
   const tasks = [
@@ -18,10 +21,11 @@ export default () => {
     { id: 3, title: "Hello WOrld", status: true },
     { id: 4, title: "Hello WOrld", status: true },
   ];
-  const [checked, setChecked] = useState(false);
   return (
     <Container>
-      <h1 style={{ color: "#bb99ff", textAlign: "center" }}>Todo App</h1>
+      <h1 style={{ color: dark.colors.primary, textAlign: "center" }}>
+        Todo App
+      </h1>
       <Flex sx={{ justifyContent: "center", alignItems: "end" }} mt="4">
         <Input
           name="task"
@@ -36,7 +40,7 @@ export default () => {
             <Flex
               as="li"
               sx={{
-                backgroundColor: "#55476f",
+                backgroundColor: dark.colors.highlight,
                 width: ["90%", null, "75%"],
                 margin: "20px auto",
                 padding: "5px",
@@ -57,10 +61,10 @@ export default () => {
               </Text>
               <div style={{ marginLeft: "auto" }}>
                 <IconButton aria-label="Toggle dark mode">
-                  <img src={EditIcon} />
+                  <EditIcon htmlColor={dark.colors.primary} />
                 </IconButton>
                 <IconButton aria-label="Toggle dark mode">
-                  <img src={DeleteIcon} />
+                  <DeleteIcon htmlColor={dark.colors.primary} />
                 </IconButton>
               </div>
             </Flex>
