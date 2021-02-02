@@ -1,42 +1,153 @@
-const { ApolloServer, gql } = require('apollo-server-lambda')
+const { ApolloServer, gql } = require("apollo-server-lambda");
+const faunadb = require("faunadb");
+const q = faunadb.query;
+require("dotenv").config();
 
+// updateTodo(id: String!, task: String!): Todo
+// deleteTodo(id: String!): Todo
+
+//the error was here
 const typeDefs = gql`
   type Query {
-    hello: String
-    allAuthors: [Author!]
-    author(id: Int!): Author
-    authorByName(name: String!): Author
+    todoList: [Todo!]
   }
-  type Author {
+  type Mutation {
+    addTodo(task: String!): Todo
+    updateTodo(id: ID!, task: String!): Todo
+    deleteTodo(id: ID!): Todo
+    updateTodoCheckbox(id: ID!): Todo
+  }
+  type Todo {
     id: ID!
-    name: String!
-    married: Boolean!
+    task: String!
+    status: Boolean!
   }
-`
-
-const authors = [
-  { id: 1, name: 'Terry Pratchett', married: false },
-  { id: 2, name: 'Stephen King', married: true },
-  { id: 3, name: 'JK Rowling', married: false },
-]
+`;
 
 const resolvers = {
   Query: {
-    hello: () => 'Hello, world!',
-    allAuthors: () => authors,
-    author: () => {},
-    authorByName: (root, args) => {
-      console.log('hihhihi', args.name)
-      return authors.find((author) => author.name === args.name) || 'NOTFOUND'
+    todoList: async () => {
+      try {
+        if (process.env.FAUNADB_ADMIN_SECRET) {
+          var client = new faunadb.Client({
+            secret: process.env.FAUNADB_ADMIN_SECRET,
+          });
+          const result = await client.query(
+            q.Map(
+              q.Paginate(q.Match(q.Index("todo_by_ref"))),
+              q.Lambda((x) => q.Get(x))
+            )
+          );
+          return result.data.map((todo) => {
+            // console.log(todo.ref.id);
+            return {
+              id: todo.ref.id,
+              task: todo.data.task,
+              status: todo.data.status,
+            };
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
-}
+  Mutation: {
+    updateTodo: async (_, { id, task }) => {
+      console.log("id: ", id);
+      console.log("task: ", task);
+
+      try {
+        var client = new faunadb.Client({
+          secret: process.env.FAUNADB_ADMIN_SECRET,
+        });
+        const result = await client.query(
+          q.Update(q.Ref(q.Collection("todo"), id), {
+            data: {
+              task: task,
+            },
+          })
+        );
+
+        console.log(result);
+        return result.task;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    addTodo: async (_, { task }) => {
+      console.log(task);
+      try {
+        var client = new faunadb.Client({
+          secret: process.env.FAUNADB_ADMIN_SECRET,
+        });
+
+        const result = await client.query(
+          q.Create(q.Collection("todo"), {
+            data: {
+              task: task,
+              status: false,
+            },
+          })
+        );
+
+        console.log(result);
+        return result.task;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    deleteTodo: async (_, { id }) => {
+      console.log("id: ", id);
+
+      try {
+        var client = new faunadb.Client({
+          secret: process.env.FAUNADB_ADMIN_SECRET,
+        });
+        const result = await client.query(
+          q.Delete(q.Ref(q.Collection("todo"), id))
+        );
+
+        console.log(result);
+        return result.task;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    updateTodoCheckbox: async (_, { id }) => {
+      console.log("id: ", id);
+
+      try {
+        var client = new faunadb.Client({
+          secret: process.env.FAUNADB_ADMIN_SECRET,
+        });
+        const checkboxCurrentValue = await client.query(
+          q.Get(q.Ref(q.Collection("todo"), id))
+        );
+        console.log(checkboxCurrentValue);
+        const result = await client.query(
+          q.Update(q.Ref(q.Collection("todo"), id), {
+            data: {
+              status: !checkboxCurrentValue.data.status,
+            },
+          })
+        );
+
+        console.log(result);
+        return result.status;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+};
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-})
+});
 
-const handler = server.createHandler()
+const handler = server.createHandler();
 
-module.exports = { handler }
+module.exports = { handler };
