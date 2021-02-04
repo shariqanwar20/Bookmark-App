@@ -24,6 +24,7 @@
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
+    "apollo-link-context": "^1.0.20",
     "apollo-server-lambda": "^2.19.2",
     "cross-fetch": "^3.0.6",
     "dotenv": "^8.2.0",

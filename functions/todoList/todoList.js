@@ -3,9 +3,6 @@ const faunadb = require("faunadb");
 const q = faunadb.query;
 require("dotenv").config();
 
-// updateTodo(id: String!, task: String!): Todo
-// deleteTodo(id: String!): Todo
-
 //the error was here
 const typeDefs = gql`
   type Query {
@@ -21,31 +18,35 @@ const typeDefs = gql`
     id: ID!
     task: String!
     status: Boolean!
+    owner: String!
   }
 `;
 
 const resolvers = {
   Query: {
-    todoList: async () => {
+    todoList: async (parent, args, { user }) => {
       try {
-        if (process.env.FAUNADB_ADMIN_SECRET) {
-          var client = new faunadb.Client({
-            secret: process.env.FAUNADB_ADMIN_SECRET,
-          });
-          const result = await client.query(
-            q.Map(
-              q.Paginate(q.Match(q.Index("todo_by_ref"))),
-              q.Lambda((x) => q.Get(x))
-            )
-          );
-          return result.data.map((todo) => {
-            // console.log(todo.ref.id);
-            return {
-              id: todo.ref.id,
-              task: todo.data.task,
-              status: todo.data.status,
-            };
-          });
+        if (!user) return [];
+        else {
+          if (process.env.FAUNADB_ADMIN_SECRET) {
+            var client = new faunadb.Client({
+              secret: process.env.FAUNADB_ADMIN_SECRET,
+            });
+            const result = await client.query(
+              q.Map(
+                q.Paginate(q.Match(q.Index("todo_by_user"), user)),
+                q.Lambda((x) => q.Get(x))
+              )
+            );
+            return result.data.map((todo) => {
+              // console.log(todo.ref.id);
+              return {
+                id: todo.ref.id,
+                task: todo.data.task,
+                status: todo.data.status,
+              };
+            });
+          }
         }
       } catch (error) {
         console.log(error);
@@ -76,8 +77,11 @@ const resolvers = {
       }
     },
 
-    addTodo: async (_, { task }) => {
+    addTodo: async (_, { task }, { user }) => {
       console.log(task);
+      if (!user) {
+        throw new Error("Must be authenticated to insert todos");
+      }
       try {
         var client = new faunadb.Client({
           secret: process.env.FAUNADB_ADMIN_SECRET,
@@ -88,6 +92,7 @@ const resolvers = {
             data: {
               task: task,
               status: false,
+              owner: user,
             },
           })
         );
@@ -146,6 +151,13 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ context }) => {
+    if (context.clientContext.user) {
+      return { user: context.clientContext.user.sub };
+    } else {
+      return {};
+    }
+  },
 });
 
 const handler = server.createHandler();
