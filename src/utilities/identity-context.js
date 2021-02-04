@@ -1,6 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
 import netlifyIdentity from "netlify-identity-widget";
-import { navigate } from "gatsby";
 
 export const IdentityContext = createContext();
 
@@ -13,7 +12,7 @@ export const IdentityProvider = ({ children }) => {
   netlifyIdentity.on("login", (user) => {
     netlifyIdentity.close();
     setUser(user);
-    navigate("/todo");
+    // navigate("/todo");
   });
   netlifyIdentity.on("logout", () => {
     netlifyIdentity.close();

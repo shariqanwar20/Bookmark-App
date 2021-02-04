@@ -23,6 +23,7 @@ import { Link, navigate } from "gatsby";
 import { IdentityContext } from "../utilities/identity-context.js";
 import Home from "./index";
 import { Navbar } from "../components/Navbar";
+import { Router, RouteComponentProps } from "@reach/router";
 
 const GET_TODO = gql`
   query {
@@ -66,11 +67,8 @@ const DELETE_TODO = gql`
   }
 `;
 
-export default () => {
+let Dashboard = (props: RouteComponentProps) => {
   const { loading, error, data } = useQuery(GET_TODO);
-
-  const { user } = useContext(IdentityContext);
-
   const [addTodo] = useMutation(ADD_TODO);
   const addTask = (title: string) => {
     addTodo({
@@ -135,11 +133,6 @@ export default () => {
   };
 
   if (error) return <div>Error...</div>;
-
-  if (!user) {
-    navigate("/");
-    return <Home />;
-  }
 
   return (
     <Container>
@@ -263,5 +256,18 @@ export default () => {
       )}
       {/* <Link to="/">Home</Link> */}
     </Container>
+  );
+};
+
+export default () => {
+  const { user } = useContext(IdentityContext);
+
+  if (!user) {
+    return <Home />;
+  }
+  return (
+    <Router>
+      <Dashboard path="/todo" />
+    </Router>
   );
 };
