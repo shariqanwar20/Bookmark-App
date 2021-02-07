@@ -4,10 +4,8 @@ import {
   Button,
   Input,
   Flex,
-  Checkbox,
   Text,
   IconButton,
-  Label,
   Box,
   Spinner,
 } from "theme-ui";
@@ -19,7 +17,6 @@ import { useQuery, useMutation } from "@apollo/client";
 import { Formik } from "formik";
 import * as yup from "yup";
 import Swal from "sweetalert2";
-import { Link, navigate } from "gatsby";
 import { IdentityContext } from "../utilities/identity-context.js";
 import Home from "./index";
 import { Navbar } from "../components/Navbar";
@@ -27,91 +24,91 @@ import { Router, RouteComponentProps } from "@reach/router";
 
 const GET_TODO = gql`
   query {
-    todoList {
+    getBookmarks {
       id
-      task
-      status
+      title
+      url
     }
   }
 `;
 
-const ADD_TODO = gql`
-  mutation($task: String!) {
-    addTodo(task: $task) {
-      task
-    }
-  }
-`;
+// const ADD_TODO = gql`
+//   mutation($task: String!) {
+//     addTodo(task: $task) {
+//       task
+//     }
+//   }
+// `;
 
-const UPDATE_TODO = gql`
-  mutation($id: ID!, $task: String!) {
-    updateTodo(id: $id, task: $task) {
-      task
-    }
-  }
-`;
+// const UPDATE_TODO = gql`
+//   mutation($id: ID!, $task: String!) {
+//     updateTodo(id: $id, task: $task) {
+//       task
+//     }
+//   }
+// `;
 
-const UPDATE_TODO_CHECKBOX = gql`
-  mutation($id: ID!) {
-    updateTodoCheckbox(id: $id) {
-      status
-    }
-  }
-`;
+// const UPDATE_TODO_CHECKBOX = gql`
+//   mutation($id: ID!) {
+//     updateTodoCheckbox(id: $id) {
+//       status
+//     }
+//   }
+// `;
 
-const DELETE_TODO = gql`
-  mutation($id: ID!) {
-    deleteTodo(id: $id) {
-      task
-    }
-  }
-`;
+// const DELETE_TODO = gql`
+//   mutation($id: ID!) {
+//     deleteTodo(id: $id) {
+//       task
+//     }
+//   }
+// `;
 
 let Dashboard = (props: RouteComponentProps) => {
   const { loading, error, data } = useQuery(GET_TODO);
-  const [addTodo] = useMutation(ADD_TODO);
-  const addTask = (title: string) => {
-    addTodo({
-      variables: {
-        task: title,
-      },
-      refetchQueries: [{ query: GET_TODO }],
-    });
-  };
+  // const [addTodo] = useMutation(ADD_TODO);
+  // const addTask = (title: string) => {
+  //   addTodo({
+  //     variables: {
+  //       task: title,
+  //     },
+  //     refetchQueries: [{ query: GET_TODO }],
+  //   });
+  // };
 
-  const [updateTodo] = useMutation(UPDATE_TODO);
-  const updateTask = (id, title: string) => {
-    updateTodo({
-      variables: {
-        id: id,
-        task: title,
-      },
-      refetchQueries: [{ query: GET_TODO }],
-    });
-  };
+  // const [updateTodo] = useMutation(UPDATE_TODO);
+  // const updateTask = (id, title: string) => {
+  //   updateTodo({
+  //     variables: {
+  //       id: id,
+  //       task: title,
+  //     },
+  //     refetchQueries: [{ query: GET_TODO }],
+  //   });
+  // };
 
-  const [deleteTodo] = useMutation(DELETE_TODO);
-  const deleteTask = (id) => {
-    deleteTodo({
-      variables: {
-        id: id,
-      },
-      refetchQueries: [{ query: GET_TODO }],
-    });
-  };
+  // const [deleteTodo] = useMutation(DELETE_TODO);
+  // const deleteTask = (id) => {
+  //   deleteTodo({
+  //     variables: {
+  //       id: id,
+  //     },
+  //     refetchQueries: [{ query: GET_TODO }],
+  //   });
+  // };
 
-  const [updateTodoCheckbox] = useMutation(UPDATE_TODO_CHECKBOX);
-  const updateTodoCheckboxTask = (id) => {
-    updateTodoCheckbox({
-      variables: {
-        id: id,
-      },
-      refetchQueries: [{ query: GET_TODO }],
-    });
-  };
+  // const [updateTodoCheckbox] = useMutation(UPDATE_TODO_CHECKBOX);
+  // const updateTodoCheckboxTask = (id) => {
+  //   updateTodoCheckbox({
+  //     variables: {
+  //       id: id,
+  //     },
+  //     refetchQueries: [{ query: GET_TODO }],
+  //   });
+  // };
 
   const validationSchema = yup.object().shape({
-    title: yup.string().required("*Enter Task Name"),
+    title: yup.string().required("*Enter Bookmark Title"),
   });
 
   const handleEdit = async (refId: any) => {
@@ -128,7 +125,7 @@ let Dashboard = (props: RouteComponentProps) => {
     if (result.value) {
       const { value } = result;
       console.log(value);
-      updateTask(refId, value[0]);
+      // updateTask(refId, value[0]);
     }
   };
 
@@ -138,7 +135,7 @@ let Dashboard = (props: RouteComponentProps) => {
     <Container>
       <Navbar />
       <h1 style={{ color: dark.colors.primary, textAlign: "center" }}>
-        Todo App
+        Bookmark App
       </h1>
       <Formik
         initialValues={{ title: "" }}
@@ -148,7 +145,7 @@ let Dashboard = (props: RouteComponentProps) => {
             values: { title: "" },
           });
           console.log(values);
-          addTask(values.title);
+          // addTask(values.title);
         }}
       >
         {({ values, handleSubmit, handleChange, touched, errors }) => (
@@ -176,7 +173,7 @@ let Dashboard = (props: RouteComponentProps) => {
               />
 
               <Button style={{ margin: "0 5px" }} type="submit">
-                Add Task
+                Add Bookmark
               </Button>
             </div>
             {touched.title && errors.title ? (
@@ -212,16 +209,6 @@ let Dashboard = (props: RouteComponentProps) => {
                   }}
                   my="3"
                 >
-                  <div style={{ margin: "auto 0" }}>
-                    <Label>
-                      <Checkbox
-                        defaultChecked={task.status}
-                        onChange={() => {
-                          updateTodoCheckboxTask(task.id);
-                        }}
-                      />
-                    </Label>
-                  </div>
                   <Text
                     sx={{
                       fontSize: 4,
@@ -243,7 +230,7 @@ let Dashboard = (props: RouteComponentProps) => {
                     <IconButton
                       aria-label="Toggle dark mode"
                       onClick={() => {
-                        deleteTask(task.id);
+                        // deleteTask(task.id);
                       }}
                     >
                       <DeleteIcon htmlColor={dark.colors.primary} />
@@ -254,7 +241,6 @@ let Dashboard = (props: RouteComponentProps) => {
             })}
         </ul>
       )}
-      {/* <Link to="/">Home</Link> */}
     </Container>
   );
 };
@@ -267,7 +253,7 @@ export default () => {
   }
   return (
     <Router>
-      <Dashboard path="/todo" />
+      <Dashboard path="/bookmark" />
     </Router>
   );
 };

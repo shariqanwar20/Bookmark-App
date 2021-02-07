@@ -1,5 +1,5 @@
 import { Link } from "gatsby";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Flex, NavLink, Button } from "theme-ui";
 import { IdentityContext } from "../utilities/identity-context.js";
 import logo from "../images/icon.png";
