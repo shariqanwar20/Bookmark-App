@@ -1,5 +1,5 @@
 import { Link } from "gatsby";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Flex, NavLink, Button } from "theme-ui";
 import { IdentityContext } from "../utilities/identity-context.js";
 import logo from "../images/icon.png";
@@ -23,7 +23,7 @@ export const Navbar = () => {
         </NavLink>
         <NavLink
           as={Link}
-          to="/todo"
+          to="/bookmark"
           p={2}
           sx={{ padding: "8px", margin: "auto 0" }}
         >
