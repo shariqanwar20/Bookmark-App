@@ -12,7 +12,6 @@ export const IdentityProvider = ({ children }) => {
   netlifyIdentity.on("login", (user) => {
     netlifyIdentity.close();
     setUser(user);
-    // navigate("/todo");
   });
   netlifyIdentity.on("logout", () => {
     netlifyIdentity.close();

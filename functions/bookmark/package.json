@@ -1,8 +1,8 @@
 {
-  "name": "todolist",
+  "name": "bookmark",
   "version": "1.0.0",
   "description": "",
-  "main": "todoList.js",
+  "main": "bookmark.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
