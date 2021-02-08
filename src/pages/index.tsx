@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { IdentityContext } from "../utilities/identity-context.js";
 import { Navbar } from "../components/Navbar";
 import { Button } from "theme-ui";
-import { dark } from "@theme-ui/presets";
+import { swiss } from "@theme-ui/presets";
 import { Link } from "@reach/router";
 
 export default function Home() {
@@ -17,9 +17,21 @@ export default function Home() {
             margin: "0 auto",
             fontSize: "50px",
             width: "50%",
+            fontWeight: "bold",
+            color: swiss.colors.primary,
           }}
         >
-          Organize it all with todoist
+          Bookmarking Application
+        </p>
+        <p
+          style={{
+            textAlign: "center",
+            margin: "0 auto",
+            fontSize: "25px",
+            width: "50%",
+          }}
+        >
+          An App for saving your bookmarks for free
         </p>
         {!user ? (
           <div style={{ textAlign: "center", marginTop: "50px" }}>
@@ -29,7 +41,7 @@ export default function Home() {
               }}
               sx={{
                 padding: "10px 30px",
-                backgroundColor: dark.colors.secondary,
+                backgroundColor: swiss.colors.secondary,
               }}
             >
               Get Started
@@ -42,7 +54,7 @@ export default function Home() {
               to="/bookmark/"
               sx={{
                 padding: "10px 30px",
-                backgroundColor: dark.colors.secondary,
+                backgroundColor: swiss.colors.secondary,
               }}
             >
               Go To Dashboard
