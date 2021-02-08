@@ -23,7 +23,7 @@ export const Navbar = () => {
         </NavLink>
         <NavLink
           as={Link}
-          to="/bookmark"
+          to="/bookmark/"
           p={2}
           sx={{ padding: "8px", margin: "auto 0" }}
         >

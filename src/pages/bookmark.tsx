@@ -22,7 +22,7 @@ import Home from "./index";
 import { Navbar } from "../components/Navbar";
 import { Router, RouteComponentProps } from "@reach/router";
 
-const GET_TODO = gql`
+const GET_BOOKMARKS = gql`
   query {
     getBookmarks {
       id
@@ -32,100 +32,92 @@ const GET_TODO = gql`
   }
 `;
 
-// const ADD_TODO = gql`
-//   mutation($task: String!) {
-//     addTodo(task: $task) {
-//       task
-//     }
-//   }
-// `;
+const ADD_BOOKMARK = gql`
+  mutation($title: String!, $url: String!) {
+    addBookmark(title: $title, url: $url) {
+      title
+      url
+    }
+  }
+`;
 
-// const UPDATE_TODO = gql`
-//   mutation($id: ID!, $task: String!) {
-//     updateTodo(id: $id, task: $task) {
-//       task
-//     }
-//   }
-// `;
+const UPDATE_BOOKMARK = gql`
+  mutation($id: ID!, $title: String!, $url: String!) {
+    editBookmark(id: $id, title: $title, url: $url) {
+      title
+    }
+  }
+`;
 
-// const UPDATE_TODO_CHECKBOX = gql`
-//   mutation($id: ID!) {
-//     updateTodoCheckbox(id: $id) {
-//       status
-//     }
-//   }
-// `;
-
-// const DELETE_TODO = gql`
-//   mutation($id: ID!) {
-//     deleteTodo(id: $id) {
-//       task
-//     }
-//   }
-// `;
+const DELETE_BOOKMARK = gql`
+  mutation($id: ID!) {
+    deleteBookmark(id: $id) {
+      title
+      url
+    }
+  }
+`;
 
 let Dashboard = (props: RouteComponentProps) => {
-  const { loading, error, data } = useQuery(GET_TODO);
-  // const [addTodo] = useMutation(ADD_TODO);
-  // const addTask = (title: string) => {
-  //   addTodo({
-  //     variables: {
-  //       task: title,
-  //     },
-  //     refetchQueries: [{ query: GET_TODO }],
-  //   });
-  // };
+  const { loading, error, data } = useQuery(GET_BOOKMARKS);
+  const [addBookmark] = useMutation(ADD_BOOKMARK);
+  const addBookmarkToDB = (title: string, url: string) => {
+    addBookmark({
+      variables: {
+        title: title,
+        url: url,
+      },
+      refetchQueries: [{ query: GET_BOOKMARKS }],
+    });
+  };
 
-  // const [updateTodo] = useMutation(UPDATE_TODO);
-  // const updateTask = (id, title: string) => {
-  //   updateTodo({
-  //     variables: {
-  //       id: id,
-  //       task: title,
-  //     },
-  //     refetchQueries: [{ query: GET_TODO }],
-  //   });
-  // };
+  const [editBookmark] = useMutation(UPDATE_BOOKMARK);
+  const updateBookmark = (id, title: string, url: string) => {
+    editBookmark({
+      variables: {
+        id: id,
+        title: title,
+        url: url,
+      },
+      refetchQueries: [{ query: GET_BOOKMARKS }],
+    });
+  };
 
-  // const [deleteTodo] = useMutation(DELETE_TODO);
-  // const deleteTask = (id) => {
-  //   deleteTodo({
-  //     variables: {
-  //       id: id,
-  //     },
-  //     refetchQueries: [{ query: GET_TODO }],
-  //   });
-  // };
-
-  // const [updateTodoCheckbox] = useMutation(UPDATE_TODO_CHECKBOX);
-  // const updateTodoCheckboxTask = (id) => {
-  //   updateTodoCheckbox({
-  //     variables: {
-  //       id: id,
-  //     },
-  //     refetchQueries: [{ query: GET_TODO }],
-  //   });
-  // };
+  const [deleteBookmark] = useMutation(DELETE_BOOKMARK);
+  const deleteBookmarkFromDb = (id) => {
+    deleteBookmark({
+      variables: {
+        id: id,
+      },
+      refetchQueries: [{ query: GET_BOOKMARKS }],
+    });
+  };
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("*Enter Bookmark Title"),
+    url: yup.string().required("*Enter Bookmark url"),
   });
 
   const handleEdit = async (refId: any) => {
     const result: any = await Swal.mixin({
       input: "text",
-      confirmButtonText: "Update",
+      confirmButtonText: "Next →",
       showCancelButton: true,
+      progressSteps: ["1", "2"],
     }).queue([
       {
-        titleText: "Enter Task",
+        titleText: "Enter Title",
+        input: "text",
+      },
+      {
+        titleText: "Enter Url",
         input: "text",
       },
     ]);
     if (result.value) {
       const { value } = result;
       console.log(value);
-      // updateTask(refId, value[0]);
+      updateBookmark(refId, value[0], value[1]);
     }
   };
 
@@ -138,14 +130,14 @@ let Dashboard = (props: RouteComponentProps) => {
         Bookmark App
       </h1>
       <Formik
-        initialValues={{ title: "" }}
+        initialValues={{ title: "", url: "" }}
         validationSchema={validationSchema}
         onSubmit={(values, { resetForm }) => {
           resetForm({
-            values: { title: "" },
+            values: { title: "", url: "" },
           });
           console.log(values);
-          // addTask(values.title);
+          addBookmarkToDB(values.title, values.url);
         }}
       >
         {({ values, handleSubmit, handleChange, touched, errors }) => (
@@ -167,8 +159,15 @@ let Dashboard = (props: RouteComponentProps) => {
               <Input
                 name="title"
                 sx={{ width: "40%", margin: "0 5px" }}
-                placeholder="Enter Task"
+                placeholder="Enter Title"
                 value={values.title}
+                onChange={handleChange}
+              />
+              <Input
+                name="url"
+                sx={{ width: "40%", margin: "0 5px" }}
+                placeholder="Enter Url"
+                value={values.url}
                 onChange={handleChange}
               />
 
@@ -193,9 +192,9 @@ let Dashboard = (props: RouteComponentProps) => {
         </div>
       ) : (
         <ul style={{ padding: "0px" }}>
-          {console.log(data)}
+          {/* {console.log(data)} */}
           {data &&
-            data.todoList.map((task, ind) => {
+            data.getBookmarks.map((bookmark, ind) => {
               return (
                 <Flex
                   as="li"
@@ -215,14 +214,14 @@ let Dashboard = (props: RouteComponentProps) => {
                       fontWeight: "bold",
                     }}
                   >
-                    {task.task}
+                    {bookmark.title} {bookmark.url}
                   </Text>
                   <div style={{ marginLeft: "auto" }}>
                     <IconButton
                       aria-label="Toggle dark mode"
                       onClick={() => {
-                        console.log(task.id);
-                        handleEdit(task.id);
+                        console.log(bookmark.id);
+                        handleEdit(bookmark.id);
                       }}
                     >
                       <EditIcon htmlColor={dark.colors.primary} />
@@ -230,7 +229,7 @@ let Dashboard = (props: RouteComponentProps) => {
                     <IconButton
                       aria-label="Toggle dark mode"
                       onClick={() => {
-                        // deleteTask(task.id);
+                        deleteBookmarkFromDb(bookmark.id);
                       }}
                     >
                       <DeleteIcon htmlColor={dark.colors.primary} />

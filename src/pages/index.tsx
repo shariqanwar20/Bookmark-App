@@ -39,7 +39,7 @@ export default function Home() {
           <div style={{ textAlign: "center", marginTop: "50px" }}>
             <Button
               as={Link}
-              to="/bookmark"
+              to="/bookmark/"
               sx={{
                 padding: "10px 30px",
                 backgroundColor: dark.colors.secondary,
