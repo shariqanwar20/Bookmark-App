@@ -15,8 +15,8 @@ export default function Home() {
           style={{
             textAlign: "center",
             margin: "0 auto",
-            fontSize: "50px",
-            width: "50%",
+            fontSize: "40px",
+            width: "70%",
             fontWeight: "bold",
             color: swiss.colors.primary,
           }}
