@@ -94,7 +94,13 @@ let Dashboard = (props: RouteComponentProps) => {
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("*Enter Bookmark Title"),
-    url: yup.string().required("*Enter Bookmark url"),
+    url: yup
+      .string()
+      .required("*Enter Bookmark url")
+      .matches(
+        /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/,
+        "Enter correct url"
+      ),
   });
 
   const handleEdit = async (refId: any) => {
@@ -158,30 +164,53 @@ let Dashboard = (props: RouteComponentProps) => {
             >
               <Input
                 name="title"
-                sx={{ width: "40%", margin: "10px auto" }}
+                sx={{ width: "40%", margin: "5px auto" }}
                 placeholder="Enter Title"
                 value={values.title}
                 onChange={handleChange}
               />
+              {touched.title && errors.title ? (
+                <p
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    color: "red",
+                    textAlign: "center",
+                    marginLeft: "30%",
+                    marginBottom: "0",
+                    marginTop: "0",
+                  }}
+                >
+                  {errors.title}
+                </p>
+              ) : null}
               <Input
                 name="url"
-                sx={{ width: "40%", margin: "10px auto" }}
+                sx={{ width: "40%", margin: "5px auto" }}
                 placeholder="Enter Url"
                 value={values.url}
                 onChange={handleChange}
               />
+              {touched.url && errors.url ? (
+                <p
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    color: "red",
+                    textAlign: "center",
+                    marginLeft: "30%",
+                    marginBottom: "0",
+                    marginTop: "0",
+                  }}
+                >
+                  {errors.url}
+                </p>
+              ) : null}
 
               <Button sx={{ marginLeft: "30%" }} type="submit">
                 Add Bookmark
               </Button>
             </div>
-            {touched.title && errors.title ? (
-              <p
-                style={{ fontSize: "15px", color: "red", textAlign: "center" }}
-              >
-                {errors.title}
-              </p>
-            ) : null}
           </Box>
         )}
       </Formik>
