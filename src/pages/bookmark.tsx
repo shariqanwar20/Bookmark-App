@@ -3,7 +3,6 @@ import {
   Container,
   Button,
   Input,
-  Flex,
   Text,
   IconButton,
   Box,
@@ -11,7 +10,7 @@ import {
 } from "theme-ui";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { dark } from "@theme-ui/presets";
+import { swiss } from "@theme-ui/presets";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/client";
 import { Formik } from "formik";
@@ -126,7 +125,7 @@ let Dashboard = (props: RouteComponentProps) => {
   return (
     <Container>
       <Navbar />
-      <h1 style={{ color: dark.colors.primary, textAlign: "center" }}>
+      <h1 style={{ color: swiss.colors.primary, textAlign: "center" }}>
         Bookmark App
       </h1>
       <Formik
@@ -152,26 +151,27 @@ let Dashboard = (props: RouteComponentProps) => {
             <div
               style={{
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "end",
               }}
             >
               <Input
                 name="title"
-                sx={{ width: "40%", margin: "0 5px" }}
+                sx={{ width: "40%", margin: "10px auto" }}
                 placeholder="Enter Title"
                 value={values.title}
                 onChange={handleChange}
               />
               <Input
                 name="url"
-                sx={{ width: "40%", margin: "0 5px" }}
+                sx={{ width: "40%", margin: "10px auto" }}
                 placeholder="Enter Url"
                 value={values.url}
                 onChange={handleChange}
               />
 
-              <Button style={{ margin: "0 5px" }} type="submit">
+              <Button sx={{ marginLeft: "30%" }} type="submit">
                 Add Bookmark
               </Button>
             </div>
@@ -196,46 +196,66 @@ let Dashboard = (props: RouteComponentProps) => {
           {data &&
             data.getBookmarks.map((bookmark, ind) => {
               return (
-                <Flex
+                <Box
                   as="li"
                   key={ind}
                   sx={{
-                    backgroundColor: dark.colors.highlight,
-                    width: ["90%", null, "75%"],
+                    backgroundColor: swiss.colors.highlight,
+                    width: ["90%", null, "60%"],
                     margin: "20px auto",
                     padding: "5px",
                     borderRadius: "5px",
+                    listStyle: "none",
                   }}
                   my="3"
                 >
-                  <Text
-                    sx={{
-                      fontSize: 4,
-                      fontWeight: "bold",
+                  <span
+                    style={{
+                      display: "flex",
+                      justifyContent: "end",
+                      width: "fit-content",
+                      marginLeft: "auto",
                     }}
                   >
-                    {bookmark.title} {bookmark.url}
-                  </Text>
-                  <div style={{ marginLeft: "auto" }}>
                     <IconButton
-                      aria-label="Toggle dark mode"
+                      aria-label="Toggle swiss mode"
                       onClick={() => {
                         console.log(bookmark.id);
                         handleEdit(bookmark.id);
                       }}
                     >
-                      <EditIcon htmlColor={dark.colors.primary} />
+                      <EditIcon htmlColor={swiss.colors.primary} />
                     </IconButton>
                     <IconButton
-                      aria-label="Toggle dark mode"
+                      aria-label="Toggle swiss mode"
                       onClick={() => {
                         deleteBookmarkFromDb(bookmark.id);
                       }}
                     >
-                      <DeleteIcon htmlColor={dark.colors.primary} />
+                      <DeleteIcon htmlColor={swiss.colors.primary} />
                     </IconButton>
-                  </div>
-                </Flex>
+                  </span>
+                  <Text
+                    sx={{
+                      fontSize: 6,
+                      fontWeight: "bold",
+                      marginLeft: "20px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {bookmark.title}
+                  </Text>
+                  <Text
+                    sx={{
+                      fontSize: 3,
+                      marginLeft: "20px",
+                      textDecoration: "underline",
+                      color: swiss.colors.secondary,
+                    }}
+                  >
+                    {bookmark.url}
+                  </Text>
+                </Box>
               );
             })}
         </ul>
